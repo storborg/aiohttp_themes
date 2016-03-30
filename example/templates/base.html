@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>${self.title()} | Example App</title>
+  ${theme.asset_tag('main.css')}
+</head>
+<body>
+  ${next.body()}
+  ${theme.asset_tag('main.js')}
+</body>
+</html>
+
+
+<%def name="title()">Default Title</%def>
