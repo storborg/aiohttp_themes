@@ -1,3 +1,7 @@
+import sass
+import os.path
+
+
 default_sentinel = object()
 
 
@@ -27,10 +31,12 @@ class SASSAsset(Asset):
         return SafeLiteral('<link rel="stylesheet" href="%s">' % url)
 
     def tag_production(self, url):
-        raise NotImplementedError
+        return SafeLiteral('<link rel="stylesheet" href="%s">' % url)
 
-    def serve(self):
-        return 'body { font-family: "Lucida Grande", sans-serif; }'
+    def serve(self, theme):
+        localpath = os.path.join(theme.static_dir, self.relpath)
+        abspath = theme.qualify_path(localpath)
+        return sass.compile(filename=abspath)
 
 
 class RequireJSAsset(Asset):
@@ -46,5 +52,5 @@ class RequireJSAsset(Asset):
     def tag_production(self, url):
         pass
 
-    def serve(self):
+    def serve(self, theme):
         return 'console.log("hello");'

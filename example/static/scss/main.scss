@@ -1,0 +1,16 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+.container {
+    background-color: #f7f0f7;
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 500px;
+
+    h1 {
+        border-bottom: 1px solid #ccc;
+        font-weight: 300;
+    }
+}

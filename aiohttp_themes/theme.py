@@ -44,7 +44,7 @@ class Theme:
 
     def serve_asset(self, key, debug):
         asset = self.assets[key]
-        return asset.serve()
+        return asset.serve(self)
 
     def populate_template_vars(self, request, params):
         params.update({
