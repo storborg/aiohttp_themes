@@ -1,9 +1,12 @@
+import os.path
 import asyncio
 import functools
+import mimetypes
 
 from aiohttp import web
 
-from .theme import THEMES_KEY, THEME_STRATEGY_KEY
+from .theme import (THEMES_KEY, THEME_STRATEGY_KEY, DEV_RESOURCE_KEY,
+                    COMPILED_RESOURCE_KEY, COMPILED_DIR_KEY)
 
 
 __version__ = '0.0.1.dev'
@@ -13,26 +16,29 @@ def make_response(filename, text):
     resp = web.Response()
     resp.encoding = 'utf-8'
     resp.text = text
-    if filename.endswith('.css'):
-        resp.content_type = 'text/css'
-    elif filename.endswith('.js'):
-        resp.content_type = 'text/javascript'
-    else:
-        resp.content_type = 'text/plain'
-
+    resp.content_type = mimetypes.guess_type(filename)[0]
     return resp
 
 
 async def asset_dev_view(request):
     app = request.app
-    theme = app[THEMES_KEY][request.match_info['theme']]
-    filename = request.match_info['filename']
-    text = theme.serve_asset(filename, debug=True)
-    return make_response(filename, text)
+    theme = app[THEMES_KEY][request.match_info['theme_key']]
+    asset_key = request.match_info['asset_key']
+    path = request.match_info['path']
+    text = theme.serve_development(asset_key, path)
+    return make_response(path, text)
 
 
 async def asset_compiled_view(request):
-    raise NotImplementedError
+    app = request.app
+    theme = app[THEMES_KEY][request.match_info['theme_key']]
+    asset_key = request.match_info['asset_key']
+    path = request.match_info['path']
+    dir = app[COMPILED_DIR_KEY]
+    abspath = os.path.join(dir, theme.key, asset_key, path)
+    async with open(abspath, 'rU') as f:
+        buf = await f.read()
+        return make_response(path, buf)
 
 
 def setup(app, themes,
@@ -42,24 +48,30 @@ def setup(app, themes,
           debug=False):
 
     theme_instances = {
-        key: theme(app, debug=debug)
-        for key, theme in themes.items()
+        theme.key: theme(app, debug=debug)
+        for theme in themes
     }
 
     app[THEMES_KEY] = theme_instances
     app[THEME_STRATEGY_KEY] = theme_strategy
+    app[COMPILED_DIR_KEY] = compiled_asset_dir
 
     if debug:
         resource = app.router.add_resource(
-            '/_themes/dev/{theme}/{filename:.+}',
-            name='aiohttp_themes.dev')
+            '/_themes/dev/{theme_key}/{asset_key}/{path:.+}',
+            name=DEV_RESOURCE_KEY)
         resource.add_route('GET', asset_dev_view)
     else:
-        raise NotImplementedError
+        resource = app.router.add_resource(
+            '/_themes/compiled/{theme_key}/{asset_key}/{path:.+}',
+            name=COMPILED_RESOURCE_KEY)
+        resource.add_route('GET', asset_compiled_view)
 
 
-def compile(themes, compiled_asset_dir):
-    raise NotImplementedError
+def compile(app, compiled_asset_dir):
+    theme_instances = app[THEMES_KEY]
+    for theme_key, theme in theme_instances.items():
+        theme.compile()
 
 
 def template(template_name):

@@ -9,23 +9,32 @@ Install with pip::
     $ pip install aiohttp_themes
 
 
-Integrate with an Aiohttp App
+Integrate with an aiohttp App
 -----------------------------
 
-WIP
+.. code-block:: python
 
-Add Themes
-----------
+    from aiohttp_themes.theme import Theme
+    from aiohttp_themes.asset import SASSAsset
 
-WIP
+    class ExampleTheme(Theme):
+        key = 'example'
+        assets = {
+            'hello.css': SASSAsset('scss/main.scss'),
+            'alt.css': SASSAsset('scss/alt/different.scss'),
+        }
 
-Use a Theme
------------
+    aiohttp_themes.setup(app,
+                         themes=[ExampleTheme],
+                         debug=True,
+                         theme_strategy='example',
+                         compiled_asset_dir='/tmp/compiled/')
 
-Configure your application to use a theme, with one of the following methods:
 
-* Specify the ``default_theme`` setting key.
-* Add a ``theme_callback`` function.
+Dynamically Switch Themes
+-------------------------
+
+The ``theme_strategy`` argument can be a callable that returns a theme key:
 
 .. code-block:: python
 
@@ -37,7 +46,7 @@ Configure your application to use a theme, with one of the following methods:
 
     aiohttp_themes.setup(app,
                          ...,
-                         theme_callback=mobile_theme_strategy)
+                         theme_strategy=mobile_theme_strategy)
 
 
 Compile Assets
@@ -47,4 +56,4 @@ After configuring your app, call:
 
 .. code-block:: python
 
-    aiohttp_themes.compile(app)
+    aiohttp_themes.compile(app, compiled_asset_dir=dir)

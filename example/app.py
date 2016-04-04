@@ -1,3 +1,5 @@
+import sys
+
 import aiohttp
 import aiohttp.web
 import aiohttp_themes
@@ -20,28 +22,34 @@ class LightTheme(Theme):
     }
 
 
-def init():
+def init(debug):
     app = aiohttp.web.Application()
     app.router.add_route('GET', '/{name}', hello_view)
     app.router.add_route('GET', '/', hello_view)
 
     aiohttp_themes.setup(app,
-                         themes={'light': LightTheme},
-                         debug=True,
+                         themes=[LightTheme],
+                         debug=debug,
                          theme_strategy='light',
-                         compiled_asset_dir='/var/compiled')
+                         compiled_asset_dir='/tmp/compiled')
     return app
 
 
-def serve():
-    app = init()
+def serve(debug):
+    app = init(debug)
     aiohttp.web.run_app(app)
 
 
 def compile():
-    app = init()
-    aiohttp_themes.compile(app)
+    app = init(debug=False)
+    aiohttp_themes.compile(app, compiled_asset_dir='/tmp/compiled')
 
 
 if __name__ == '__main__':
-    serve()
+    if (len(sys.argv) > 1) and (sys.argv[1] == 'compile'):
+        print("Compiling...")
+        compile()
+    elif (len(sys.argv) > 1) and (sys.argv[1] == 'production'):
+        serve(debug=False)
+    else:
+        serve(debug=True)
