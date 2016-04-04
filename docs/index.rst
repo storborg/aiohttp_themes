@@ -1,5 +1,5 @@
-Pyramid Frontend Tools
-======================
+aiohttp_themes
+==============
 
 Scott Torborg - `Cart Logic <http://www.cartlogic.com>`_
 
