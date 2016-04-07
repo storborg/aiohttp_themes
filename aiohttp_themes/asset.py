@@ -43,7 +43,7 @@ class SASSAsset(Asset):
         return SafeLiteral('<link rel="stylesheet" href="%s">' % url)
 
     def serve_development(self, key, theme, path):
-        return self._compile_sass(theme)
+        return self._compile_sass(theme).encode('utf-8')
 
 
 class RequireJSAsset(Asset):
@@ -77,5 +77,5 @@ class RequireJSAsset(Asset):
     def serve_development(self, key, theme, relpath):
         localpath = os.path.join(theme.static_dir, relpath)
         abspath = theme.expand_fs_path(localpath)
-        with open(abspath, 'r') as f:
+        with open(abspath, 'rb') as f:
             return f.read()

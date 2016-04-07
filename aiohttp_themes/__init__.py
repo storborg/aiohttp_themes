@@ -12,10 +12,10 @@ from .theme import (THEMES_KEY, THEME_STRATEGY_KEY, DEV_RESOURCE_KEY,
 __version__ = '0.0.1.dev'
 
 
-def make_response(filename, text):
+def make_response(filename, body):
     resp = web.Response()
     resp.encoding = 'utf-8'
-    resp.text = text
+    resp.body = body
     resp.content_type = mimetypes.guess_type(filename)[0]
     return resp
 
@@ -36,7 +36,7 @@ async def asset_compiled_view(request):
     path = request.match_info['path']
     dir = app[COMPILED_DIR_KEY]
     abspath = os.path.join(dir, theme.key, asset_key, path)
-    async with open(abspath, 'rU') as f:
+    async with open(abspath, 'rb') as f:
         buf = await f.read()
         return make_response(path, buf)
 
