@@ -20,7 +20,7 @@ setup(name='aiohttp_themes',
       packages=find_packages(),
       install_requires=[
           'aiohttp',
-          'mako',
+          'mako>=1.0.4',
           'libsass',
       ],
       test_suite='nose.collector',
