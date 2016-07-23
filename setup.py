@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(name='aiohttp_themes',
       version='0.0.3.dev',
-      description='Aiohttp Chat Example',
+      description='Theme and frontend handling for aiohttp',
       long_description='',
       classifiers=[
           'Development Status :: 2 - Pre-Alpha',
