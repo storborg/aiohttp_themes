@@ -9,7 +9,7 @@ from .theme import (THEMES_KEY, THEME_STRATEGY_KEY, DEV_RESOURCE_KEY,
                     COMPILED_RESOURCE_KEY, COMPILED_DIR_KEY)
 
 
-__version__ = '0.0.2'
+__version__ = '0.0.3.dev'
 
 
 def make_response(filename, body):
