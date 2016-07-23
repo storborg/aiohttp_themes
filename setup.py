@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='aiohttp_themes',
-      version='0.0.1.dev',
+      version='0.0.2',
       description='Aiohttp Chat Example',
       long_description='',
       classifiers=[
